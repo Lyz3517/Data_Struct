@@ -364,11 +364,199 @@ private:
 ### 3.8 向函数传递对象
 
 ### 3.9 静态成员
+在类的定义中，前面有static说明的成员函数称为静态成员函数。静态成员函数的作用不是对象之间的沟通，而是为了处理静态数据成员。静态成员函数属于整个类，时该类所有对象共享的成员函数，而不属于类中的某个对象。定义静态成员函数的格式如下：
+
+> static 返回类型 静态成员函数名(参数表)；
+
+```cpp {.line-numbers}
+/*与静态成员函数类似，调用公有静态成员函数的一般格式有如下几种*/
+类名::静态成员函数名（实参表）
+对象.静态成员函数名(实参表)
+对象指针->静态成员函数名(实参波)
+```
+
+一般而言，静态成员函数不访问类中的非静态成员。如确实需要，静态成员函数只能通过对象名(或对象指针、对象引用)访问该对象的非静态成员。
+
+
+下面对静态成员函数的使用再做几点说明：
+
+1. 一般情况下，静态函数成员主要用来访问静态成员函数。当它与静态数据一起使用时，达到了对同一个类中对象之间共享数据的目的。
+2. 私有静态成员函数不能被类外部的函数和对象访问。
+3. 使用私有静态成员函数的一个原因是，可以用它建立任何对象之前调用静态成员函数，以处理静态数据成员，这是普通成员函数不能实现的功能。
+4. 编译系统将静态成员函数限定为内部连接，也就是说，与现行文件相连接的其他文件中的同名函数不会与该函数发生冲突，维护了该函数使用的安全性，这是使用静态成员函数的另一个原因。
+5. 静态成员函数是类的一部分，而不是对象的一部分。如果要在类外调用公有的静态成员函数，使用u如下格式比较好: 类名::静态成员函数名()
+
+```cpp {.line-numbers}
+#include <iostream>
+using namespace std;
+
+class Score
+{
+private:
+    int mid_exam;
+    int fin_exam;
+    static int count;           // 静态数据成员，用于统计学生人数
+    static float sum;           // 静态数据成员，用于统计期末累加成绩
+    static float ave;           // 静态数据成员，用于统计期末平时成绩
+
+public:
+    Score(int m, int f);
+    ~Score();
+    static void show_count_sum_ave();       // 静态成员函数
+};
+
+Score::Score(int m, int f)
+{
+    mid_exam = m;
+    fin_exam = f;
+    ++count;
+    sum += fin_exam;
+    ave = sum / count;
+}
+
+Score::~Score()
+{
+
+
+}
+
+/*******静态成员初始化**********/
+
+int Score::count = 0;
+float Score::sum = 0.0;
+float Score::ave = 0.0;
+
+void Score::show_count_sum_ave()
+{
+    cout << "学生人数: " << count << endl;
+	cout << "期末累加成绩: " << sum << endl;
+	cout << "期末平均成绩: " << ave << endl;
+}
+
+int main()
+{
+    Score sco[3] = {Score(92, 90), Score(91, 90), Score(90, 90)};
+    sco[2].show_count_sum_ave();
+    Score::show_count_sum_ave();
+    return 0;
+}
+
+```
+
 
 ### 3.10 友元
+
+友元函数既可以是不属于任何类的非成员函数，也可以是另一个类的成员函数。友元函数不是当前类的成员函数，但是可以访问该类的所有成员，包括私有成员、保护成员和公有成员。
+
+在类的声明友元函数时，需要在其函数名之前加上关键字friend。此声明可以放在公有部分，也可以放在保护部分和私有部分。友元函数可以定义在类的内部，也可以定义在类的外部
+
+**将非成员函数声明为友元函数**
+
+```cpp {.line-numbers}
+#include <iostream>
+using namespace std;
+
+class Score{
+private:
+	int mid_exam;
+	int fin_exam;
+public:
+	Score(int m, int f);
+	void showScore();
+	friend int getScore(Score &ob);
+};
+
+Score::Score(int m, int f)
+{
+    mid_exam = m;
+    fin_exam = f;
+}
+
+int getScore(Score &ob)
+{
+    return (int)(0.3 * ob.mid_exam + 0.7 * ob.fin_exam);
+}
+
+int main()
+{
+    Score score(98, 78);
+    cout << "成绩为: " << getScore(score) << endl;
+    return 0;
+}
+
+```
+
+**说明**:
+
+1. 友元函数虽然可以访问类对象的私有成员，但他毕竟不是成员函数。因此，在类的外部定义友元函数时，不必像成员函数那样，在函数名前面加上"类名"。
+2. 因为友元函数不是类的成员，所以它不能直接访问对象的数据成员，也不能通过this指针访问对象的数据成员，它必须通过作为入口参数传递进来的对象名(或对象指针、对象引用)来访问该对象的数据成员。
+3. 友元函数提供了不同类的成员函数之间类的成员函数与一般函数之间进行数据共享的机制。尤其当一个函数需要访问多个类时，友元函数非常有用，普通的成员函数只能访问其所属的类，但是多个类的友元函数能够访问相关的所有类的数据类型。
 
 ### 3.11 类的组合
 
 ### 3.12 共享数据的保护
 
 ## 4. 继承与派生
+
+继承可以在已有类的基础上创建新的类，新类可以从一个或多个已有类中继承成员函数和数据成员，而且可以重新定义或加进新的数据和函数，从而形成类的层次或等级。其中类称为基类或父类，在它的基础上建立的新类称为派生类或子类。
+
+**4.1 继承与派生 的概念**
+
+类的继承是新的类从已有类那里得到已有的特性。从另一个角度来看这个问题，从已有类产生新类的过程就是类的派生。类的继承和派生较好地解决了代码重用的问题。
+
+关于基类和派生类的关系，可以表述为 ：派生类是基类的具体化，而基类则是派生类的抽象。
+
+```cpp {.line-numbers}
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Person{
+private:
+    string name;
+    string id_number;
+    int age;
+public:
+    Person(string name1, string id_number1, int age1) {
+        name = name1;
+        id_number = id_number1;
+        age = age1;
+    }
+    ~Person() {
+        
+    }
+    void show() {
+        cout << "姓名: " << name << "  身份证号: " << id_number << " 年龄: " << age << endl;
+    }
+};
+
+class Student:public Person {
+private:
+    int creadit;
+public:
+    Student(string name1, string id_number1, int age1, int creadit1):Person(name1, id_number1, age1) {
+        creadit = creadit1;
+    }
+    ~Student() {
+
+    }
+    void show(){
+        Person::show();
+        cout << "学分： " << creadit << endl;
+    }
+};
+
+int main(int argc, char ** argv)
+{   
+    Student stu("白", "1234564651", 12, 123);
+    stu.show();
+
+    return 0;
+}
+```
+
+ 派生类对基类成员的访问规则：
+
+ - 内部访问：由派生类中新增的成员函数对基类继承来的成员的访问。
+ - 对象访问：在n派生类外部，通过派生类的对象对n从基类继承来的成员的访问。
