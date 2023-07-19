@@ -1,5 +1,7 @@
 {
     "files.associations": {
         "iostream": "cpp"
-    }
+    },
+    "ros.distro": "foxy",
+    "cmake.sourceDirectory": "/home/jason/Data_Structs/tree/lab1"
 }
