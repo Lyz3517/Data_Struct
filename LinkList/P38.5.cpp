@@ -65,7 +65,7 @@ LinkList CreatList(vector<int> data)
 void PrintLint(LinkList head, int mode) { 
     if (mode == 1) {
         if (head == NULL) return ;
-        while (head != NULL) {
+        while (head->next != NULL) {            // 翻转的时候已经将头结点也记录为链表的结点之一所以记得将头结点不输出
             printf("%d ", head->data);
             head = head->next;
         }
@@ -85,32 +85,38 @@ void PrintLint(LinkList head, int mode) {
 
 LinkList ReverseList(LinkList& head) {
     // 头插法实现链表反转
-    LNode* s = head->next, *r;
-    head->next = NULL;
+    // LNode* s = head->next, *r;
+    // head->next = NULL;
 
-    while (s != NULL) {
-        r = s->next;
-        s->next = head->next;
-        head->next = s;
-        s = r;
-    }
+    // while (s != NULL) {
+    //     r = s->next;
+    //     s->next = head->next;
+    //     head->next = s;
+    //     s = r;
+    // }
 
-    return head;
+    // return head;
 
     // 三指针法反转
-    // LNode *pre, *mid, *re;
-    // pre = head;
-    // mid = pre->next;
-    // re = mid->next;
-    // pre->next = NULL;
+    // LNode *pre, *p = head->next, *r = p->next;
+    // p->next = NULL;                 // 处理第一个结点
+    // while (r != NULL) {             // r为空，则说明p为最后一个节点
+    //     pre = p;                    // 依次继续遍历
+    //     p = r;
 
-    // while (pre != NULL) {
-    //     mid->next = pre;
-    //     pre->next = mid;
-    //     mid = re;
-    //     re = re->next;
     // }
-    // return pre;
+
+    LNode* temp;  // 保存cur的下一个节点
+    LNode* cur = head;
+    LNode* pre = NULL;
+    while (cur) {
+        temp = cur->next;   // 保存一下 cur的下一个节点
+        cur->next = pre;    // 翻转操作
+        // 更新pre和cur指针
+        pre = cur;
+        cur = temp;
+    }
+    return pre;
 }
 
 void reverList(LinkList L) {
@@ -127,7 +133,7 @@ int main(){
     PrintLint(head, 2);
     // head = Reverse(head);
     head = ReverseList(head);  
-    PrintLint(head, 2);
+    PrintLint(head,1);
     return 0;
 }
 
