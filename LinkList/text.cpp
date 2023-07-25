@@ -1,125 +1,70 @@
-#include <iostream>
-#include <cstdio>
-#include <algorithm>
 #include <vector>
+#include <cstdio>
+#include <iostream>
 
 using namespace std;
-
-// P40.2
-// 在带头结点的单链表中，删除所有值为x的结点，并释放其空间
-// 不唯一，试编写算法以实现上述操作
 
 #pragma region
 
 typedef int ElemType;
-#define _for(i,a,b) for (int i = (a); i < (b); ++i)
+#define _for(i, a, b) for (int i = (a); i < (b); i++) 
 
-typedef struct List{
+typedef struct ListNode {
     ElemType data;
-    struct List* next;
-}LNode, *LinkList;
+    struct ListNode* next;
+} ListNode, *LinkList;
 
-// 初始化链表
-bool InitList(LinkList& head) {
-    // 分配一个头结点
-    head = (LNode*)malloc(sizeof(LNode));
-    // 内存不足，分配失败
-    if (head == NULL) {
-        return false;
-    }
-    // 头结点之后暂时没有结点
+
+LinkList InitList(LinkList& head) {
+    head = (LinkList)malloc(sizeof(ListNode));
     head->next = NULL;
-    return true;
-}
 
-bool IsEmpty(LinkList& head) {
-    return (head->next == NULL);
-}
-
-// 使用尾插法创建链表
-LinkList CreatList(vector<int> data)
-{
-    if (data.size() < 1) return NULL;
-
-    // 头结点
-    LNode* head = (LinkList)malloc(sizeof(LNode));
-    head->next = NULL;
-    LinkList p = head;
-    _for(i, 0, data.size()) {
-        LNode* s = (LinkList)malloc(sizeof(LNode));
-        s->data = data[i];
-        s->next = NULL;
-        p->next = s;
-        p = s;
-    }
     return head;
 }
 
-/**
- * PrintList: 打印单链表
- * 参数：
- * mode： 1: 不带头结点， 2: 带头结点
- * 
-*/
+LinkList head_List(LinkList& head, vector<int> data) {
+    // ListNode* pre = (LinkList)malloc(sizeof(ListNode));
+    // pre->data = data[0];
+    // pre->next = NULL;
+    // head->next = pre;
 
-void PrintLint(LinkList head, int mode) { 
-    if (mode == 1) {
-        if (head == NULL) return ;
-        while (head != NULL) {
-            printf("%d ", head->data);
-            head = head->next;
-        }
-        printf("\nmode 1 Print is over!\n");
-    } else if (mode == 2) {
-        if (head->next == NULL) return ;
-        head = head->next;
-        while (head != NULL) {
-            printf("%d ", head->data);
-            head = head->next;
-        }
-        printf("\nmode 2 Print is over!\n");
+    _for(i, 0, data.size()) {
+        ListNode* s = (LinkList)malloc(sizeof(ListNode));
+        s->data = data[i];
+        s->next = head->next;
+        head->next = s;
     }
+    return head;
 } 
+
+void PrintList(LinkList head) {
+    if (head->next == NULL) {
+        printf("this is empty!\n");
+        return ;
+    }
+    while (head->next != NULL) {
+        head = head->next;
+        printf("%d ", head->data);
+    }
+}
+
 #pragma endregion
 
 
-LinkList ReverseList(LinkList& head) {
-    // 头插法实现链表反转
-    // LNode* s = head->next, *r;
-    // head->next = NULL;
 
-    // while (s != NULL) {
-    //     r = s->next;
-    //     s->next = head->next;
-    //     head->next = s;
-    //     s = r;
-    // }
+/**
+ * @brief 给定一个带头结点的单链表，设head为头结点，结点结构为(data, next)
+ *         data为整型元素，next为指针元素，试写出算法：按递增次序输出单链表中各结点的数据元素，
+ *         并释放结点所占的存储空间(要求：不允许使用数组作为辅助空间)
+ * 
+ * @return int 
+ */
 
-    // 三指针法反转
-    LNode *pre, *mid, *re;
-    pre = head;
-    mid = pre->next;
-    re = mid->next;
-    pre->next = NULL;
-
-    while (pre != NULL) {
-        mid->next = pre;
-        pre->next = mid;
-        mid = re;
-        re = re->next;
-    }
-    return pre;
-}
-
-int main(){
-    vector<int> data{ 1, 2, 3, 4, 5, 6, 7, 7, 10 };
+int main(void) {
+    vector<int> data{ 6, 5, 4, 3, 2, 1 };
     LinkList head;
-    InitList(head);
-    head = CreatList(data);        // 带头结点
-    PrintLint(head, 2);
-    // head = Reverse(head);
-    head = ReverseList(head);  
-    PrintLint(head, 2);
+    head = InitList(head);
+    head = head_List(head, data);
+    PrintList(head);
     return 0;
 }
-

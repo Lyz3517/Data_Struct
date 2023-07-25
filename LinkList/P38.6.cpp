@@ -42,9 +42,25 @@ LinkList IintList(LinkList& L, int mode) {
  */
 void PrintList(LinkList L, int mode) {
     if (mode == 1) {
-        ;
+        if (L->next == NULL) {
+            printf("It is empty of List");
+            return ;
+        }
+
+        while (L->next != NULL) {
+            L = L->next;
+            printf("%d ", L->data);
+        }
     } else if (mode == 2) {
-        ;
+        if (L->next == NULL) {
+            printf("It is empty of List");
+            return ;
+        }
+
+        while (L != NULL) {
+            printf("%d ", L->data);
+            L = L->next;
+        }
     }
 }
 
@@ -67,14 +83,27 @@ bool IsEmpty(LinkList L, int mode) {
  * @brief 
  * 
  * @param L 
- * @param mode 
+ * @param mode : 1. 带头结点的单链表
+ *               2. 不带头结点的单链表
  * @return LinkList 
  */
-LinkList HeadList(LinkList& L, int mode) {
+LinkList HeadList(LinkList& L, int mode, vector<int> data) {
     if (mode == 1) {
-        ;
-    } else if (mode == 2) {
-        ;
+        _for(i, 0, data.size()) {
+            ListNode* s = (LinkList)malloc(sizeof(ListNode));
+            s->data = data[i];
+            s->next = L->next;
+            L->next = s;     
+        }
+        return L;
+    } else if (mode == 2) {         // 理解为 s1->L  转变为L->s1 第二轮 s2->L->s1 L->s2->s1
+        _for(i, 0, data.size()) {
+            ListNode* s = (LinkList)malloc(sizeof(ListNode));
+            s->data = data[i];
+            s->next = L;
+            L = s;
+        }
+        return L;
     }
 }
 
@@ -123,7 +152,9 @@ LinkList TailList(LinkList& L, int mode, vector<int> data) {
 int main(void)
 {
     LinkList head;
-    head = IintList(head, 1);
-
+    head = IintList(head, 2);
+    vector<int> data{ 1, 2, 3, 3, 4, 5, 6, 8 };
+    head = HeadList(head, 2, data);
+    PrintList(head, 2);
     return 0;
 }
