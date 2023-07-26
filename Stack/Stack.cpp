@@ -22,7 +22,7 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-#include <SqStack.h.h>
+#include </home/jason/Data_Structs/Stack/SqStack.h>
 
 using namespace std;
 
